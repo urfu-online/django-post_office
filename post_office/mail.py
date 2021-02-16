@@ -1,4 +1,7 @@
 import sys
+from email.utils import make_msgid
+from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -6,9 +9,6 @@ from django.db import connection as db_connection
 from django.db.models import Q
 from django.template import Context, Template
 from django.utils import timezone
-from email.utils import make_msgid
-from multiprocessing import Pool
-from multiprocessing.dummy import Pool as ThreadPool
 
 from .connections import connections
 from .lockfile import default_lockfile, FileLock, FileLocked
@@ -185,13 +185,13 @@ def get_queued():
     """
     now = timezone.now()
     query = (
-        (Q(status=STATUS.queued) | Q(status=STATUS.requeued)) &
-        (Q(scheduled_time__lte=now) | Q(scheduled_time__isnull=True)) &
-        (Q(expires_at__gt=now) | Q(expires_at__isnull=True))
+            (Q(status=STATUS.queued) | Q(status=STATUS.requeued)) &
+            (Q(scheduled_time__lte=now) | Q(scheduled_time__isnull=True)) &
+            (Q(expires_at__gt=now) | Q(expires_at__isnull=True))
     )
     return Email.objects.filter(query) \
-                .select_related('template') \
-                .order_by(*get_sending_order()).prefetch_related('attachments')[:get_batch_size()]
+               .select_related('template') \
+               .order_by(*get_sending_order()).prefetch_related('attachments')[:get_batch_size()]
 
 
 def send_queued(processes=1, log_level=None):

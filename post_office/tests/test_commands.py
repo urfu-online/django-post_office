@@ -64,7 +64,6 @@ class CommandTest(TestCase):
         self.assertEqual(Email.objects.count(), 0)
         self.assertEqual(Attachment.objects.count(), 0)
 
-
     def test_cleanup_mail(self):
         """
         The ``cleanup_mail`` command deletes mails older than a specified

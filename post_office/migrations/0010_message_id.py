@@ -1,4 +1,5 @@
 import random
+
 from django.db import migrations, models
 
 from post_office.models import STATUS
@@ -19,7 +20,6 @@ def forwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('post_office', '0009_requeued_mode'),
     ]

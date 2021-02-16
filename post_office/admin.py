@@ -1,12 +1,12 @@
 import re
 
 from django import forms
-from django.db import models
-from django.contrib import admin
 from django.conf import settings
 from django.conf.urls import re_path
+from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.mail.message import SafeMIMEText
+from django.db import models
 from django.forms import BaseInlineFormSet
 from django.forms.widgets import TextInput
 from django.http.response import HttpResponse, HttpResponseNotFound
@@ -25,6 +25,7 @@ def get_message_preview(instance):
     return ('{0}...'.format(instance.message[:25]) if len(instance.message) > 25
             else instance.message)
 
+
 get_message_preview.short_description = 'Message'
 
 
@@ -42,7 +43,7 @@ class AttachmentInline(admin.StackedInline):
             a.id
             for a in queryset
             if isinstance(a.attachment.headers, dict)
-            and a.attachment.headers.get("Content-Disposition", "").startswith("inline")
+               and a.attachment.headers.get("Content-Disposition", "").startswith("inline")
         ]
         return queryset.exclude(id__in=inlined_attachments)
 
@@ -78,13 +79,14 @@ def requeue(modeladmin, request, queryset):
     """An admin action to requeue emails."""
     queryset.update(status=STATUS.queued)
 
+
 requeue.short_description = 'Requeue selected emails'
 
 
 class EmailAdmin(admin.ModelAdmin):
     list_display = ['truncated_message_id', 'to_display', 'shortened_subject', 'status', 'last_updated', 'scheduled_time', 'use_template']
     search_fields = ['to', 'subject']
-    readonly_fields = ['message_id', 'render_subject', 'render_plaintext_body',  'render_html_body']
+    readonly_fields = ['message_id', 'render_subject', 'render_plaintext_body', 'render_html_body']
     date_hierarchy = 'last_updated'
     inlines = [AttachmentInline, LogInline]
     list_filter = ['status', 'template__language', 'template__name']
@@ -166,7 +168,7 @@ class EmailAdmin(admin.ModelAdmin):
         elif has_plaintext_content:
             fieldsets.append(
                 (_("Text Email"), {'fields': ['render_subject', 'render_plaintext_body']})
-             )
+            )
 
         return fieldsets
 
@@ -285,12 +287,14 @@ class EmailTemplateAdmin(admin.ModelAdmin):
 
     def description_shortened(self, instance):
         return Truncator(instance.description.split('\n')[0]).chars(200)
+
     description_shortened.short_description = _("Description")
     description_shortened.admin_order_field = 'description'
 
     def languages_compact(self, instance):
         languages = [tt.language for tt in instance.translated_templates.order_by('language')]
         return ', '.join(languages)
+
     languages_compact.short_description = _("Languages")
 
     def save_model(self, request, obj, form, change):
@@ -304,6 +308,7 @@ class EmailTemplateAdmin(admin.ModelAdmin):
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ['name', 'file']
     filter_horizontal = ['emails']
+
 
 admin.site.register(Email, EmailAdmin)
 admin.site.register(Log, LogAdmin)

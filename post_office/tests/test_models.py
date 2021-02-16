@@ -1,7 +1,5 @@
-import django
 import json
 import os
-
 from datetime import datetime, timedelta
 
 from django.conf import settings as django_settings, settings
@@ -13,8 +11,8 @@ from django.forms.models import modelform_factory
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Email, Log, PRIORITY, STATUS, EmailTemplate, Attachment
 from ..mail import send
+from ..models import Email, Log, PRIORITY, STATUS, EmailTemplate, Attachment
 
 
 class ModelTest(TestCase):
@@ -223,7 +221,7 @@ class ModelTest(TestCase):
 
         self.assertFalse(form.is_valid())
 
-        self.assertEqual(form.errors['default_template'],  ['This field is required.'])
+        self.assertEqual(form.errors['default_template'], ['This field is required.'])
         self.assertEqual(form.errors['content'], ["Invalid filter: 'titl'"])
         self.assertIn(form.errors['html_content'],
                       [['Unclosed tags: endblock '],

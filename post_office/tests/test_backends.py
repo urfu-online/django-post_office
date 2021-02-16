@@ -1,5 +1,6 @@
 import os
 from email.mime.image import MIMEImage
+
 from django.conf import settings
 from django.core.files.images import File
 from django.core.mail import EmailMultiAlternatives, send_mail, EmailMessage

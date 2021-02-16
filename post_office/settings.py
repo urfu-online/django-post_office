@@ -1,3 +1,4 @@
+import datetime
 import warnings
 
 from django.conf import settings
@@ -5,10 +6,7 @@ from django.core.cache import caches
 from django.core.cache.backends.base import InvalidCacheBackendError
 from django.core.mail.utils import DNS_NAME
 from django.template import engines as template_engines
-
 from django.utils.module_loading import import_string
-
-import datetime
 
 
 def get_backend(alias='default'):
@@ -125,5 +123,5 @@ def get_message_id_fqdn():
 
 
 CONTEXT_FIELD_CLASS = get_config().get('CONTEXT_FIELD_CLASS',
-                                       'jsonfield.JSONField')
+                                       'django.db.models.JSONField')
 context_field_class = import_string(CONTEXT_FIELD_CLASS)

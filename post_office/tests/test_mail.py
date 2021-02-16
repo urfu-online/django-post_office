@@ -1,23 +1,20 @@
-from unittest.mock import patch, MagicMock
+import re
 from datetime import timedelta
+from unittest.mock import patch
 
 import pytz
-import re
-
+from django.conf import settings
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from django.conf import settings
-
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import timezone
 
-from ..settings import get_batch_size, get_log_level, get_threads_per_process, get_max_retries, get_retry_timedelta
-from ..models import Email, EmailTemplate, Attachment, PRIORITY, STATUS
 from ..mail import (create, get_queued,
                     send, send_many, send_queued, _send_bulk)
-
+from ..models import Email, EmailTemplate, Attachment, PRIORITY, STATUS
+from ..settings import get_batch_size, get_log_level, get_threads_per_process, get_max_retries, get_retry_timedelta
 
 connection_counter = 0
 
@@ -411,7 +408,7 @@ class MailTest(TestCase):
         # attempt to send email for the first time
         with patch('django.utils.timezone.now', side_effect=lambda: timezone.datetime(2020, 5, 18, 8, 0, 0)):
             email = create('from@example.com', recipients=['to@example.com'], subject='subject', message='message',
-                            backend='error')
+                           backend='error')
             self.assertIsNotNone(email.pk)
             self.assertEqual(email.created, timezone.datetime(2020, 5, 18, 8, 0, 0))
             self.assertEqual(email.status, STATUS.queued)
@@ -477,9 +474,9 @@ class MailTest(TestCase):
     def test_invalid_expired(self):
         with self.assertRaises(ValidationError):
             create('from@example.com', recipients=['to@example.com'], subject='subject',
-                           message='message',
-                           scheduled_time=timezone.datetime(2020, 5, 18, 9, 0, 1),
-                           expires_at=timezone.datetime(2020, 5, 18, 9, 0, 0))
+                   message='message',
+                   scheduled_time=timezone.datetime(2020, 5, 18, 9, 0, 1),
+                   expires_at=timezone.datetime(2020, 5, 18, 9, 0, 0))
 
     @patch('post_office.signals.email_queued.send')
     def test_backend_signal(self, mock):

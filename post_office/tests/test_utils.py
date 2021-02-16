@@ -1,6 +1,5 @@
-from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
-
+from django.core.files.base import ContentFile
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -87,6 +86,7 @@ class UtilsTest(TestCase):
         """Check if POST_OFFICE_CACHE and POST_OFFICE_TEMPLATE_CACHE understood
         correctly
         """
+
         def is_cache_used(suffix='', desired_cache=False):
             """Raise exception if real cache usage not equal to desired_cache value
             """

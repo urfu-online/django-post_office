@@ -2,18 +2,18 @@ import os
 from email.mime.image import MIMEImage
 
 from django.contrib.auth import get_user_model
+from django.core.files.images import ImageFile
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.message import SafeMIMEMultipart, SafeMIMEText
-from django.core.files.images import ImageFile
 from django.template.loader import get_template
 from django.test import Client, TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
 
+from post_office.mail import send, send_queued
 from post_office.models import Email, EmailTemplate, STATUS
 from post_office.template import render_to_string
 from post_office.template.backends.post_office import PostOfficeTemplates
-from post_office.mail import create, send, send_queued
 
 
 class HTMLMailTest(TestCase):
@@ -123,7 +123,7 @@ class HTMLMailTest(TestCase):
         filename = os.path.join(os.path.dirname(__file__), 'static/dummy.png')
         context = {'imgsrc': filename}
         queued_mail = send(recipients=['to@example.com'], sender='from@example.com',
-                     template=template, context=context, render_on_delivery=True)
+                           template=template, context=context, render_on_delivery=True)
         queued_mail = Email.objects.get(id=queued_mail.id)
         send_queued()
         self.assertEqual(Email.objects.get(id=queued_mail.id).status, STATUS.sent)

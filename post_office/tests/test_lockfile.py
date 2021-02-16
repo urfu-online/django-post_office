@@ -1,5 +1,5 @@
-import time
 import os
+import time
 
 from django.test import TestCase
 

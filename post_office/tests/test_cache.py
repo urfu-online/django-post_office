@@ -14,7 +14,7 @@ class CacheTest(TestCase):
         self.assertTrue(get_cache_backend())
 
         # If no post office key is defined, it should return default
-        del(settings.CACHES['post_office'])
+        del (settings.CACHES['post_office'])
         self.assertTrue(get_cache_backend())
 
         # If no caches key in settings, it should return None

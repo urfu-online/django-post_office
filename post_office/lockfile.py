@@ -102,7 +102,7 @@ class FileLock:
             if self.valid_lock():
                 intervals -= 1
                 time.sleep(interval)
-                #print('stopping %s' % intervals)
+                # print('stopping %s' % intervals)
             else:
                 return True
 

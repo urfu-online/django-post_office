@@ -1,10 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.forms import formset_factory
 from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from post_office.admin import EmailTemplateAdminForm
-
 
 User = get_user_model()
 

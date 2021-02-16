@@ -10,7 +10,6 @@ from django.utils.timezone import now
 
 from post_office.mail import send_queued_mail_until_done
 from post_office.utils import cleanup_expired_mails
-
 from .settings import get_celery_enabled
 
 try:
@@ -32,11 +31,13 @@ else:
         """
         send_queued_mail_until_done()
 
+
     def queued_mail_handler(sender, **kwargs):
         """
         Trigger an asynchronous mail delivery.
         """
         send_queued_mail.delay()
+
 
     @shared_task(ignore_result=True)
     def cleanup_mail(*args, **kwargs):
