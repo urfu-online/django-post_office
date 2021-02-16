@@ -18,7 +18,7 @@ from .settings import (
     get_available_backends, get_batch_size, get_log_level, get_max_retries, get_message_id_enabled,
     get_message_id_fqdn, get_retry_timedelta, get_sending_order, get_threads_per_process,
 )
-from .signals import email_queued
+from .signals import email_queued, email_sent
 from .utils import (
     create_attachments, get_email_template, parse_emails, parse_priority, split_emails,
 )
@@ -286,6 +286,7 @@ def _send_bulk(emails, uses_multiprocessing=True, log_level=None):
     # Update statuses of sent emails
     email_ids = [email.id for email in sent_emails]
     Email.objects.filter(id__in=email_ids).update(status=STATUS.sent)
+    email_sent.send(sender=Email, emails=sent_emails)
 
     # Update statuses and conditionally requeue failed emails
     num_failed, num_requeued = 0, 0

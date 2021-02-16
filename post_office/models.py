@@ -1,24 +1,20 @@
 import os
-
 from collections import namedtuple
-from uuid import uuid4
 from email.mime.nonmultipart import MIMENonMultipart
+from uuid import uuid4
 
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.db import models
+from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.translation import pgettext_lazy, gettext_lazy as _
-from django.utils import timezone
-from jsonfield import JSONField
 
 from post_office import cache
 from post_office.fields import CommaSeparatedEmailField
-
 from .connections import connections
 from .settings import context_field_class, get_log_level, get_template_engine, get_override_recipients
 from .validators import validate_email_with_name, validate_template_syntax
-
 
 PRIORITY = namedtuple('PRIORITY', 'low medium high now')._make(range(4))
 STATUS = namedtuple('STATUS', 'sent failed queued requeued')._make(range(4))
@@ -64,7 +60,7 @@ class Email(models.Model):
                                       help_text=_("Email won't be sent after this timestamp"))
     message_id = models.CharField("Message-ID", null=True, max_length=255, editable=False)
     number_of_retries = models.PositiveIntegerField(null=True, blank=True)
-    headers = JSONField(_('Headers'), blank=True, null=True)
+    headers = models.JSONField(_('Headers'), blank=True, null=True)
     template = models.ForeignKey('post_office.EmailTemplate', blank=True,
                                  null=True, verbose_name=_("Email template"),
                                  on_delete=models.CASCADE)
@@ -252,17 +248,17 @@ class EmailTemplate(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     subject = models.CharField(max_length=255, blank=True,
-        verbose_name=_("Subject"), validators=[validate_template_syntax])
+                               verbose_name=_("Subject"), validators=[validate_template_syntax])
     content = models.TextField(blank=True,
-        verbose_name=_("Content"), validators=[validate_template_syntax])
+                               verbose_name=_("Content"), validators=[validate_template_syntax])
     html_content = models.TextField(blank=True,
-        verbose_name=_("HTML content"), validators=[validate_template_syntax])
+                                    verbose_name=_("HTML content"), validators=[validate_template_syntax])
     language = models.CharField(max_length=12,
-        verbose_name=_("Language"),
-        help_text=_("Render template in alternative language"),
-        default='', blank=True)
+                                verbose_name=_("Language"),
+                                help_text=_("Render template in alternative language"),
+                                default='', blank=True)
     default_template = models.ForeignKey('self', related_name='translated_templates',
-        null=True, default=None, verbose_name=_('Default template'), on_delete=models.CASCADE)
+                                         null=True, default=None, verbose_name=_('Default template'), on_delete=models.CASCADE)
 
     objects = EmailTemplateManager()
 
@@ -310,7 +306,7 @@ class Attachment(models.Model):
     emails = models.ManyToManyField(Email, related_name='attachments',
                                     verbose_name=_('Emails'))
     mimetype = models.CharField(max_length=255, default='', blank=True)
-    headers = JSONField(_('Headers'), blank=True, null=True)
+    headers = models.JSONField(_('Headers'), blank=True, null=True)
 
     class Meta:
         app_label = 'post_office'
