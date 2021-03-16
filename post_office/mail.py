@@ -286,6 +286,7 @@ def _send_bulk(emails, uses_multiprocessing=True, log_level=None):
     # Update statuses of sent emails
     email_ids = [email.id for email in sent_emails]
     Email.objects.filter(id__in=email_ids).update(status=STATUS.sent)
+    logger.info("!!! Send email_sent signal")
     email_sent.send(sender=Email, emails=sent_emails)
 
     # Update statuses and conditionally requeue failed emails
